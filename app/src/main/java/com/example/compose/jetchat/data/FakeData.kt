@@ -30,7 +30,12 @@ val initialMessages = listOf(
     Message(
         "me",
         "Greetings from KeshavSoft!",
-        "8:07 PM"
+        "4:07 PM"
+    ),
+    Message(
+        "me",
+        "Good morning",
+        "8:07 AM"
     ),
     Message(
         "Keshav Nalam",
