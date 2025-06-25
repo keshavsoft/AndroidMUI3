@@ -80,9 +80,18 @@ class NavActivity : AppCompatActivity() {
                         drawerState = drawerState,
                         selectedMenu = selectedMenu,
                         onChatClicked = {
-                            findNavController().popBackStack(R.id.nav_home, false)
                             scope.launch {
                                 drawerState.close()
+                            }
+                            when (it) {
+                                "TestbyKeshav" -> {
+                                    findNavController().popBackStack(R.id.nav_newchat, false)
+                                    findNavController().navigate(R.id.nav_newchat)
+                                }
+                                else -> {
+                                    findNavController().popBackStack(R.id.nav_home, false)
+                                    findNavController().navigate(R.id.nav_home)
+                                }
                             }
                             selectedMenu = it
                         },

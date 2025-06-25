@@ -1,4 +1,7 @@
-package com.example.compose.jetchat.conversation
+package com.example.compose.jetchat.conversation.newchat
 
-class NewChatMessage {
-}
+data class NewChatMessage(
+    val author: String,
+    val content: String,
+    val timestamp: String,
+)

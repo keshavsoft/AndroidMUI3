@@ -77,8 +77,8 @@ fun JetchatDrawerContent(
         ChatItem("composers", selectedMenu == "composers") {
             onChatClicked("composers")
         }
-        ChatItem("gps", selectedMenu == "gps") {
-            onChatClicked("gps")
+        ChatItem("TestbyKeshav", selectedMenu == "TestbyKeshav") {
+            onChatClicked("TestbyKeshav")
         }
         ChatItem("droidcon-nyc", selectedMenu == "droidcon-nyc") {
             onChatClicked("droidcon-nyc")
