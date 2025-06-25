@@ -88,6 +88,10 @@ class NavActivity : AppCompatActivity() {
                                     findNavController().popBackStack(R.id.nav_newchat, false)
                                     findNavController().navigate(R.id.nav_newchat)
                                 }
+                                "Gps" -> {
+                                    findNavController().popBackStack(R.id.nav_gps, false)
+                                    findNavController().navigate(R.id.nav_gps)
+                                }
                                 else -> {
                                     findNavController().popBackStack(R.id.nav_home, false)
                                     findNavController().navigate(R.id.nav_home)

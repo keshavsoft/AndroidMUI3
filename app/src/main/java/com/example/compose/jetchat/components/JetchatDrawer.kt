@@ -83,6 +83,9 @@ fun JetchatDrawerContent(
         ChatItem("droidcon-nyc", selectedMenu == "droidcon-nyc") {
             onChatClicked("droidcon-nyc")
         }
+        ChatItem("Gps", selectedMenu == "Gps") {
+            onChatClicked("Gps")
+        }
         DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
         DrawerItemHeader("Recent Profiles")
         ProfileItem(
