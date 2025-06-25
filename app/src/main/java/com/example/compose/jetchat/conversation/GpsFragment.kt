@@ -17,7 +17,7 @@ class GpsFragment : Fragment() {
 
     // Use the existing ConversationUiState class with new message data
     private val newChatUiState = ConversationUiState(
-        channelName = "TestbyKeshav",
+        channelName = "Gps Chat",
         channelMembers = 100,
         initialMessages = gpsMessages
     )

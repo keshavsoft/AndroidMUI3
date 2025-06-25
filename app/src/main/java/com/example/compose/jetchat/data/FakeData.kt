@@ -26,6 +26,24 @@ import com.example.compose.jetchat.data.EMOJIS.EMOJI_PINK_HEART
 import com.example.compose.jetchat.data.EMOJIS.EMOJI_POINTS
 import com.example.compose.jetchat.profile.ProfileScreenState
 
+val gpsMessages = listOf(
+    Message(
+        "me", // Sender
+        "This is from Gps",
+        "10:00 AM"
+    ),
+    Message(
+        "KeshavSoft HR", // Sender
+        "You're welcome! Have a great day! $EMOJI_PINK_HEART",
+        "10:10 AM"
+    ),
+    Message(
+        "me", // Sender
+        "Thanks again!$EMOJI_FLAMINGO $EMOJI_CLOUDS",
+        "10:12 AM"
+    )
+)
+
 val initialMessages = listOf(
     Message(
         "me",
