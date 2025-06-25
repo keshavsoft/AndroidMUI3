@@ -136,6 +136,12 @@ fun UserInputPreview() {
     UserInput(onMessageSent = {})
 }
 
+@Preview
+@Composable
+fun UserInputPreviewOnly() {
+    UserInputOnly(onMessageSent = {})
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserInput(
@@ -194,6 +200,62 @@ fun UserInput(
                     dismissKeyboard()
                 },
                 currentInputSelector = currentInputSelector
+            )
+            SelectorExpanded(
+                onCloseRequested = dismissKeyboard,
+                onTextAdded = { textState = textState.addText(it) },
+                currentSelector = currentInputSelector
+            )
+        }
+    }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun UserInputOnly(
+    onMessageSent: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    resetScroll: () -> Unit = {},
+) {
+    var currentInputSelector by rememberSaveable { mutableStateOf(InputSelector.NONE) }
+    val dismissKeyboard = { currentInputSelector = InputSelector.NONE }
+
+    // Intercept back navigation if there's a InputSelector visible
+    if (currentInputSelector != InputSelector.NONE) {
+        BackHandler(onBack = dismissKeyboard)
+    }
+
+    var textState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue())
+    }
+
+    // Used to decide if the keyboard should be shown
+    var textFieldFocusState by remember { mutableStateOf(false) }
+
+    Surface(tonalElevation = 2.dp, contentColor = MaterialTheme.colorScheme.secondary) {
+        Column(modifier = modifier) {
+            UserInputText(
+                textFieldValue = textState,
+                onTextChanged = { textState = it },
+                // Only show the keyboard if there's no input selector and text field has focus
+                keyboardShown = currentInputSelector == InputSelector.NONE && textFieldFocusState,
+                // Close extended selector if text field receives focus
+                onTextFieldFocused = { focused ->
+                    if (focused) {
+                        currentInputSelector = InputSelector.NONE
+                        resetScroll()
+                    }
+                    textFieldFocusState = focused
+                },
+                onMessageSent = {
+                    onMessageSent(textState.text)
+                    // Reset text field and close keyboard
+                    textState = TextFieldValue()
+                    // Move scroll to bottom
+                    resetScroll()
+                },
+                focusState = textFieldFocusState
             )
             SelectorExpanded(
                 onCloseRequested = dismissKeyboard,
@@ -322,6 +384,57 @@ private fun UserInputSelector(
             selected = currentInputSelector == InputSelector.PHONE,
             description = stringResource(id = R.string.videochat_desc)
         )
+
+        val border = if (!sendMessageEnabled) {
+            BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+            )
+        } else {
+            null
+        }
+        Spacer(modifier = Modifier.weight(1f))
+
+        val disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+
+        val buttonColors = ButtonDefaults.buttonColors(
+            disabledContainerColor = Color.Transparent,
+            disabledContentColor = disabledContentColor
+        )
+
+        // Send button
+        Button(
+            modifier = Modifier.height(36.dp),
+            enabled = sendMessageEnabled,
+            onClick = onMessageSent,
+            colors = buttonColors,
+            border = border,
+            contentPadding = PaddingValues(0.dp)
+        ) {
+            Text(
+                stringResource(id = R.string.send),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun UserInputSelectorOnly(
+    onSelectorChange: (InputSelector) -> Unit,
+    sendMessageEnabled: Boolean,
+    onMessageSent: () -> Unit,
+    currentInputSelector: InputSelector,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .height(72.dp)
+            .wrapContentHeight()
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
 
         val border = if (!sendMessageEnabled) {
             BorderStroke(

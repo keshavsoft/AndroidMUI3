@@ -29,7 +29,7 @@ class GpsFragment : Fragment() {
     ): View = ComposeView(inflater.context).apply {
         setContent {
             JetchatTheme {
-                ConversationContent(
+                ConversationContentOnly(
                     uiState = newChatUiState,
                     navigateToProfile = { user ->
                         val bundle = Bundle().apply {

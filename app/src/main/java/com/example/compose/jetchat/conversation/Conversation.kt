@@ -220,6 +220,122 @@ fun ConversationContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Composable
+fun ConversationContentOnly(
+    uiState: ConversationUiState,
+    navigateToProfile: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onNavIconPressed: () -> Unit = { }
+) {
+    val authorMe = stringResource(R.string.author_me)
+    val timeNow = stringResource(id = R.string.now)
+
+    val scrollState = rememberLazyListState()
+    val topBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(topBarState)
+    val scope = rememberCoroutineScope()
+
+    var background by remember {
+        mutableStateOf(Color.Transparent)
+    }
+
+    var borderStroke by remember {
+        mutableStateOf(Color.Transparent)
+    }
+
+    val dragAndDropCallback = remember {
+        object : DragAndDropTarget {
+            override fun onDrop(event: DragAndDropEvent): Boolean {
+                val clipData = event.toAndroidDragEvent().clipData
+
+                if (clipData.itemCount < 1) {
+                    return false
+                }
+
+                uiState.addMessage(
+                    Message(authorMe, clipData.getItemAt(0).text.toString(), timeNow)
+                )
+
+                return true
+            }
+
+            override fun onStarted(event: DragAndDropEvent) {
+                super.onStarted(event)
+                borderStroke = Color.Red
+            }
+
+            override fun onEntered(event: DragAndDropEvent) {
+                super.onEntered(event)
+                background = Color.Red.copy(alpha = .3f)
+            }
+
+            override fun onExited(event: DragAndDropEvent) {
+                super.onExited(event)
+                background = Color.Transparent
+            }
+
+            override fun onEnded(event: DragAndDropEvent) {
+                super.onEnded(event)
+                background = Color.Transparent
+                borderStroke = Color.Transparent
+            }
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            ChannelNameBar(
+                channelName = uiState.channelName,
+                channelMembers = uiState.channelMembers,
+                onNavIconPressed = onNavIconPressed,
+                scrollBehavior = scrollBehavior,
+            )
+        },
+        // Exclude ime and navigation bar padding so this can be added by the UserInput composable
+        contentWindowInsets = ScaffoldDefaults
+            .contentWindowInsets
+            .exclude(WindowInsets.navigationBars)
+            .exclude(WindowInsets.ime),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) { paddingValues ->
+        Column(
+            Modifier.fillMaxSize().padding(paddingValues)
+                .background(color = background)
+                .border(width = 2.dp, color = borderStroke)
+                .dragAndDropTarget(shouldStartDragAndDrop = { event ->
+                    event
+                        .mimeTypes()
+                        .contains(
+                            ClipDescription.MIMETYPE_TEXT_PLAIN
+                        )
+                }, target = dragAndDropCallback)
+        ) {
+            Messages(
+                messages = uiState.messages,
+                navigateToProfile = navigateToProfile,
+                modifier = Modifier.weight(1f),
+                scrollState = scrollState
+            )
+            UserInputOnly(
+                onMessageSent = { content ->
+                    uiState.addMessage(
+                        Message(authorMe, content, timeNow)
+                    )
+                },
+                resetScroll = {
+                    scope.launch {
+                        scrollState.scrollToItem(0)
+                    }
+                },
+                // let this element handle the padding so that the elevation is shown behind the
+                // navigation bar
+                modifier = Modifier.navigationBarsPadding().imePadding()
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChannelNameBar(
